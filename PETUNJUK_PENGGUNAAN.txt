@@ -1,0 +1,89 @@
+================================================================================
+                    PANDUAN MENJALANKAN APLIKASI JALANSAFE
+        TUGAS AKHIR PRAKTIKUM PABW - MODUL 9 (HMVC REACT STARTER KIT)
+================================================================================
+
+Aplikasi JalanSafe adalah Sistem Informasi Pengelolaan dan Pelaporan Kerusakan
+Jalan Kota Cerdas berbasis Arsitektur Modular HMVC (Hierarchical Model View
+Controller) dengan antarmuka modern React 19, TypeScript, Inertia.js 2,
+Tailwind CSS, dan shadcn/ui.
+
+Paket ini sudah disiapkan dalam format "SIAP PAKAI" (Plug & Play) lengkap dengan:
+1. Seluruh dependensi backend di folder 'vendor/' (tidak perlu 'composer install').
+2. Seluruh aset frontend React di folder 'public/build/' yang sudah terkompilasi
+   penuh (TIDAK PERLU menginstal Node.js / npm ataupun menjalankan 'npm run dev').
+3. Database SQLite ('database/database.sqlite') yang sudah termigrasi dan terisi
+   seeder akun pengguna serta data ruas jalan dan contoh pelaporan.
+4. Skrip peluncur otomatis 1-klik untuk Windows (.bat) dan Linux/macOS (.sh).
+
+--------------------------------------------------------------------------------
+1. CARA MENJALANKAN PALING CEPAT (1-KLIK)
+--------------------------------------------------------------------------------
+A. Untuk Pengguna Windows:
+   - Cukup klik dua kali (double-click) berkas: jalankan_windows.bat
+   - Browser akan otomatis terbuka ke alamat: http://127.0.0.1:8000
+
+B. Untuk Pengguna Linux / macOS:
+   - Buka Terminal di dalam folder ini, kemudian jalankan:
+       bash jalankan_linux_mac.sh
+   - Browser akan otomatis terbuka ke alamat: http://127.0.0.1:8000
+
+--------------------------------------------------------------------------------
+2. CARA MENJALANKAN SECARA MANUAL VIA CMD / TERMINAL
+--------------------------------------------------------------------------------
+Jika ingin menjalankan secara manual:
+
+Langkah 1: Pastikan storage symlink terhubung (agar foto laporan kerusakan tampil):
+   php artisan storage:link
+
+Langkah 2: Nyalakan web server lokal Laravel:
+   php artisan serve
+
+Langkah 3: Buka peramban (browser) dan akses:
+   http://127.0.0.1:8000
+
+--------------------------------------------------------------------------------
+3. INFORMASI AKUN LOGIN (SUDAH TERSEDIA DI DATABASE)
+--------------------------------------------------------------------------------
+1) Akun Aparatur Dinas Bina Marga (Admin):
+   - Email    : admin@example.com
+   - Password : password
+   - Hak Akses:
+     * Mengelola Master Data Ruas Jalan (CRUD Synchronous Inertia.js pada modul DataJalan).
+     * Mengubah dan memverifikasi status penanganan laporan jalan (Ditinjau, Diperbaiki, Selesai).
+     * Mengakses dashboard statistik kota cerdas.
+
+2) Akun Warga Masyarakat Pelapor (User):
+   - Email    : user@example.com
+   - Password : password
+   - Hak Akses:
+     * Melaporkan kerusakan jalan secara cepat menggunakan dialog modal AJAX + upload foto bukti (CRUD Asynchronous pada modul PelaporanJalan).
+     * Melihat riwayat laporan, mengedit deskripsi, atau membatalkan laporan secara instan tanpa reload browser.
+     * Tidak memiliki akses ke pengelolaan master data ruas jalan (otomatis diblokir 403 Forbidden).
+
+--------------------------------------------------------------------------------
+4. ARSITEKTUR DAN FITUR UNGGULAN MODUL 9
+--------------------------------------------------------------------------------
+1. Modular HMVC:
+   - Modules/DataJalan       : Menangani data induk ruas jalan dengan CRUD Inertia.
+   - Modules/PelaporanJalan  : Menangani pelaporan kerusakan dengan CRUD AJAX + upload berkas.
+   - Modules/UserManagement  : Menangani manajemen akun dan role pengguna.
+2. Autentikasi & Autorisasi:
+   - Fortify Authentication (Login, Register, Logout).
+   - Middleware 'EnsureUserHasRole' yang membatasi hak akses berdasarkan role pengguna.
+3. React Single-Page Application:
+   - Pemanfaatan Inertia.js 2 dan React 19 untuk pengalaman navigasi super cepat tanpa jeda muat ulang halaman penuh.
+   - Dukungan komponen UI modern berbasis Tailwind CSS dan dialog modal interaktif.
+
+--------------------------------------------------------------------------------
+5. VERIFIKASI PENGUJIAN OTOMATIS (PEST TEST SUITE)
+--------------------------------------------------------------------------------
+Jika ingin menguji seluruh skenario fungsional dan keamanan sistem:
+   php artisan test
+
+Seluruh pengujian mencakup:
+- Autentikasi pengguna dan proteksi guest redirect.
+- Proteksi rute admin dari akses akun warga (HTTP 403 Forbidden).
+- Validasi form request dan pengunggahan berkas bukti ke public storage.
+- Respons status HTTP 200/201 JSON pada operasi CRUD AJAX.
+================================================================================
