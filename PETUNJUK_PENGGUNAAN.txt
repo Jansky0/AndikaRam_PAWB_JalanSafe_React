@@ -1,49 +1,63 @@
 ================================================================================
-                    PANDUAN MENJALANKAN APLIKASI JALANSAFE
+          PANDUAN SETUP MANDIRI JALANSAFE HMVC REACT VIA TERMINAL
         TUGAS AKHIR PRAKTIKUM PABW - MODUL 9 (HMVC REACT STARTER KIT)
 ================================================================================
 
 Aplikasi JalanSafe adalah Sistem Informasi Pengelolaan dan Pelaporan Kerusakan
 Jalan Kota Cerdas berbasis Arsitektur Modular HMVC (Hierarchical Model View
 Controller) dengan antarmuka modern React 19, TypeScript, Inertia.js 2,
-Tailwind CSS, dan shadcn/ui.
+Tailwind CSS, dan komponen shadcn/ui.
 
-Paket ini sudah disiapkan dalam format "SIAP PAKAI" (Plug & Play) lengkap dengan:
-1. Seluruh dependensi backend di folder 'vendor/' (tidak perlu 'composer install').
-2. Seluruh aset frontend React di folder 'public/build/' yang sudah terkompilasi
-   penuh (TIDAK PERLU menginstal Node.js / npm ataupun menjalankan 'npm run dev').
-3. Database SQLite ('database/database.sqlite') yang sudah termigrasi dan terisi
-   seeder akun pengguna serta data ruas jalan dan contoh pelaporan.
-4. Skrip peluncur otomatis 1-klik untuk Windows (.bat) dan Linux/macOS (.sh).
+Ikuti langkah-langkah di bawah ini melalui terminal (Command Prompt, PowerShell,
+atau Terminal Linux/macOS) untuk menjalankan dan mempelajari aplikasi:
 
 --------------------------------------------------------------------------------
-1. CARA MENJALANKAN PALING CEPAT (1-KLIK)
+1. PRASYARAT
 --------------------------------------------------------------------------------
-A. Untuk Pengguna Windows:
-   - Cukup klik dua kali (double-click) berkas: jalankan_windows.bat
-   - Browser akan otomatis terbuka ke alamat: http://127.0.0.1:8000
-
-B. Untuk Pengguna Linux / macOS:
-   - Buka Terminal di dalam folder ini, kemudian jalankan:
-       bash jalankan_linux_mac.sh
-   - Browser akan otomatis terbuka ke alamat: http://127.0.0.1:8000
+Pastikan di komputer sudah terinstal:
+- PHP versi 8.2 atau lebih tinggi (cek: php -v)
+- Composer versi 2.x (cek: composer -v)
+- Node.js versi 18+ / 20+ dan npm (cek: node -v && npm -v)
 
 --------------------------------------------------------------------------------
-2. CARA MENJALANKAN SECARA MANUAL VIA CMD / TERMINAL
+2. URUTAN PERINTAH SETUP VIA TERMINAL
 --------------------------------------------------------------------------------
-Jika ingin menjalankan secara manual:
 
-Langkah 1: Pastikan storage symlink terhubung (agar foto laporan kerusakan tampil):
+Langkah 1: Salin file konfigurasi lingkungan (.env)
+   - Windows CMD    : copy .env.example .env
+   - PowerShell/Bash: cp .env.example .env
+
+Langkah 2: Instal dependensi PHP (Composer)
+   composer install
+
+Langkah 3: Generate Application Key
+   php artisan key:generate
+
+Langkah 4: Jalankan migrasi basis data SQLite dan seeder data awal
+   php artisan migrate:fresh --seed
+   (Jika muncul konfirmasi pembuatan file database SQLite, ketik 'yes' lalu Enter)
+
+Langkah 5: Hubungkan symbolic link public storage (agar foto laporan kerusakan tampil)
    php artisan storage:link
 
-Langkah 2: Nyalakan web server lokal Laravel:
+Langkah 6: Instal dependensi JavaScript/React (npm)
+   npm install
+
+Langkah 7: Kompilasi aset frontend React
+   Opsi A (Mode Development):
+      npm run dev
+   ATAU
+   Opsi B (Kompilasi Sekali):
+      npm run build
+
+Langkah 8: Nyalakan web server lokal Laravel
    php artisan serve
 
-Langkah 3: Buka peramban (browser) dan akses:
+Akses aplikasi di browser:
    http://127.0.0.1:8000
 
 --------------------------------------------------------------------------------
-3. INFORMASI AKUN LOGIN (SUDAH TERSEDIA DI DATABASE)
+3. INFORMASI AKUN LOGIN (SUDAH TERSEDIA DI SEEDER DATABASE)
 --------------------------------------------------------------------------------
 1) Akun Aparatur Dinas Bina Marga (Admin):
    - Email    : admin@example.com
@@ -59,31 +73,18 @@ Langkah 3: Buka peramban (browser) dan akses:
    - Hak Akses:
      * Melaporkan kerusakan jalan secara cepat menggunakan dialog modal AJAX + upload foto bukti (CRUD Asynchronous pada modul PelaporanJalan).
      * Melihat riwayat laporan, mengedit deskripsi, atau membatalkan laporan secara instan tanpa reload browser.
-     * Tidak memiliki akses ke pengelolaan master data ruas jalan (otomatis diblokir 403 Forbidden).
+     * Tidak memiliki hak mengedit data ruas jalan (otomatis ditolak 403 Forbidden).
 
 --------------------------------------------------------------------------------
-4. ARSITEKTUR DAN FITUR UNGGULAN MODUL 9
+4. VERIFIKASI PENGUJIAN OTOMATIS (FEATURE TEST)
 --------------------------------------------------------------------------------
-1. Modular HMVC:
-   - Modules/DataJalan       : Menangani data induk ruas jalan dengan CRUD Inertia.
-   - Modules/PelaporanJalan  : Menangani pelaporan kerusakan dengan CRUD AJAX + upload berkas.
-   - Modules/UserManagement  : Menangani manajemen akun dan role pengguna.
-2. Autentikasi & Autorisasi:
-   - Fortify Authentication (Login, Register, Logout).
-   - Middleware 'EnsureUserHasRole' yang membatasi hak akses berdasarkan role pengguna.
-3. React Single-Page Application:
-   - Pemanfaatan Inertia.js 2 dan React 19 untuk pengalaman navigasi super cepat tanpa jeda muat ulang halaman penuh.
-   - Dukungan komponen UI modern berbasis Tailwind CSS dan dialog modal interaktif.
-
---------------------------------------------------------------------------------
-5. VERIFIKASI PENGUJIAN OTOMATIS (PEST TEST SUITE)
---------------------------------------------------------------------------------
-Jika ingin menguji seluruh skenario fungsional dan keamanan sistem:
-   php artisan test
+Untuk menguji seluruh skenario fungsional dan keamanan sistem:
+   php artisan test tests/Feature/JalanSafeTest.php
 
 Seluruh pengujian mencakup:
-- Autentikasi pengguna dan proteksi guest redirect.
-- Proteksi rute admin dari akses akun warga (HTTP 403 Forbidden).
-- Validasi form request dan pengunggahan berkas bukti ke public storage.
-- Respons status HTTP 200/201 JSON pada operasi CRUD AJAX.
+- Pengalihan tamu ke halaman login
+- Proteksi rute admin dari akses akun warga (HTTP 403 Forbidden)
+- Operasi CRUD Inertia pada master data ruas jalan
+- Operasi CRUD AJAX pada pelaporan kerusakan jalan
+- Pengunggahan foto bukti ke storage dan pembersihan berkas saat data dihapus
 ================================================================================
